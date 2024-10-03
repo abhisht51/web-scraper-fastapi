@@ -7,11 +7,15 @@ URL = "https://dentalstall.com/shop/page"
 public_folder = os.path.join(os.getcwd(), "public", "images")
 
 
-def pages(page: str, save_img: bool = False) -> dict[Any]:
-    page = requests.get(f"{URL}/{page}")
-    html = Soup(page.content, "html.parser")
+def pages(page: str, proxy_string: str = None, save_img: bool = False) -> dict[Any]:
     products = []
+    proxy = {}
+    # check for valid url?
+    if proxy_string:
+        proxy = {"https": proxy_string}  # assumed https proxy only
 
+    page = requests.get(f"{URL}/{page}", proxies=proxy)
+    html = Soup(page.content, "html.parser")
     product_containers = html.find_all("div", class_="product-inner clearfix")
 
     if not os.path.exists(public_folder):
