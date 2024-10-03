@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup as Soup
 from typing import Any
 import requests
 import os
-import time 
+import time
 
 URL = "https://dentalstall.com/shop/page"
 public_folder = os.path.join(os.getcwd(), "public", "images")
@@ -11,31 +11,40 @@ public_folder = os.path.join(os.getcwd(), "public", "images")
 def pages(page: str, proxy_string: str = None, save_img: bool = False) -> dict[Any]:
     products = []
     proxy = {}
-    html = None 
+    html = None
     # check for valid url?
     if proxy_string:
         proxy = {"https": proxy_string}  # assumed https proxy only
-    
+
     MAX_RETRIES = 3
-    RETRY_DELAY = 5  # seconds
+    RETRY_DELAY = 3  # seconds
     retries = 0
-    
+
     while retries < MAX_RETRIES:
         try:
-            response = requests.get(f"{URL}/{page}", proxies=proxy)
+            url_to_fetch = f"{URL}/{page}/"
+            if page == 1:
+                url_to_fetch = URL + "/"
+            print(f"Fetching from page {url_to_fetch}")
+            response = requests.get(f"{url_to_fetch}", proxies=proxy)
             if response.status_code == 200:
                 html = response
-                break 
+                break
             else:
-                raise Exception(f"Failed to fetch webpage. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch webpage. Status code: {response.status_code}"
+                )
         except Exception as e:
             retries += 1
             if retries < MAX_RETRIES:
-                print(f"Retry {retries}/{MAX_RETRIES} for fetching webpage after error: {e}")
+                print(
+                    f"Retry {retries}/{MAX_RETRIES} for fetching webpage after error: {e}"
+                )
                 time.sleep(RETRY_DELAY)
             else:
-                print(f"Failed to fetch webpage after {MAX_RETRIES} retries: {URL}/{page}")
-
+                print(
+                    f"Failed to fetch webpage after {MAX_RETRIES} retries: {URL}/{page}"
+                )
 
     # page = requests.get(f"{URL}/{page}", proxies=proxy)
     soup = Soup(html.content, "html.parser")
