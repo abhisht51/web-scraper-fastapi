@@ -23,8 +23,6 @@ def pages(page: str, proxy_string: str = None, save_img: bool = False) -> dict[A
     while retries < MAX_RETRIES:
         try:
             url_to_fetch = f"{URL}/{page}/"
-            if page == 1:
-                url_to_fetch = URL + "/"
             print(f"Fetching from page {url_to_fetch}")
             response = requests.get(f"{url_to_fetch}", proxies=proxy)
             if response.status_code == 200:

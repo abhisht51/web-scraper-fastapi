@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from .scrapper import pages
+from .auth import verify_token
 from .storage_manager import JSONFileStorage, RedisCache, StorageManager
 
 app = FastAPI()
@@ -7,15 +8,15 @@ app = FastAPI()
 
 @app.get("/")
 def root(page: str | None = "world"):
-    return {"hello": "world"}
+    return {"message": "Hello from web scrapper"}
 
 
-@app.get("/pages")
+@app.get("/pages", dependencies=[Depends(verify_token)])
 def pages_func(
     limit: int | None = 1, proxy_string: str | None = "", save_img: bool | None = False
 ):
     data = []
-    page = 2  # page 1 is not responding
+    page = 1  # sometimes page 1 stops responding 
     while page <= limit:
         print(f"Scrapping data for page={page}")
         page_data = pages(page, proxy_string, save_img)
@@ -30,5 +31,4 @@ def pages_func(
 
     return {
         "message": f"Scrapped {len(data)} items from the first {limit} page",
-        "data": data,
     }
