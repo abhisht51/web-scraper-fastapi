@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 import json
 import os
 import redis
+from .logger import Logger
+
+logger = Logger("Atlys Storage: ")
 
 
 class Storage(ABC):
@@ -59,7 +62,7 @@ class SQLStorage(Storage):
 
     def store_data(self, products):
         # Placeholder for storing data in SQL
-        print("Storing data in SQL storage (not implemented).")
+        logger.info("Storing data in SQL storage (not implemented).")
 
     def close_connection(self):
         # self.connection.close()
@@ -130,11 +133,13 @@ class StorageManager:
         if products_to_update:
             updated_data = list(existing_titles.values())
             self.storage.store_data(updated_data)
-            print(
+            logger.info(
                 f"Stored {len(products_to_update)} new or updated products to storage."
             )
 
         # Cache new or updated products in Redis
         if products_to_cache:
             self.cache.cache_products(products_to_cache)
-            print(f"Cached {len(products_to_cache)} new or updated products in Redis.")
+            logger.info(
+                f"Cached {len(products_to_cache)} new or updated products in Redis."
+            )

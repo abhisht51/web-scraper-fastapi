@@ -4,6 +4,10 @@ import requests
 import os
 import time
 
+from .logger import Logger
+
+logger = Logger("Atlys Scrapper: ")
+
 URL = "https://dentalstall.com/shop/page"
 public_folder = os.path.join(os.getcwd(), "public", "images")
 
@@ -23,7 +27,7 @@ def pages(page: str, proxy_string: str = None, save_img: bool = False) -> dict[A
     while retries < MAX_RETRIES:
         try:
             url_to_fetch = f"{URL}/{page}/"
-            print(f"Fetching from page {url_to_fetch}")
+            logger.info(f"Fetching from page {url_to_fetch}")
             response = requests.get(f"{url_to_fetch}", proxies=proxy)
             if response.status_code == 200:
                 html = response
@@ -35,12 +39,12 @@ def pages(page: str, proxy_string: str = None, save_img: bool = False) -> dict[A
         except Exception as e:
             retries += 1
             if retries < MAX_RETRIES:
-                print(
+                logger.info(
                     f"Retry {retries}/{MAX_RETRIES} for fetching webpage after error: {e}"
                 )
                 time.sleep(RETRY_DELAY)
             else:
-                print(
+                logger.error(
                     f"Failed to fetch webpage after {MAX_RETRIES} retries: {URL}/{page}"
                 )
 
