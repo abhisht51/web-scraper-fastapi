@@ -1,6 +1,6 @@
 # example-fastapi
 
-Example of eventsourcing with FastAPI
+A simple webscrapper with FastAPI
 
 ## Getting Started
 
